@@ -55,7 +55,7 @@ pipeline {
 
                                 if exist "${envFile}" copy "${envFile}" ".env"
 
-                                set CI=false
+                                export CI=false
                                 npm run build
 
                                 if not exist "${buildOutputDir}" mkdir "${buildOutputDir}"
