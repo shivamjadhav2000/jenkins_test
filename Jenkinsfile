@@ -1,27 +1,15 @@
 pipeline {
     agent any
 
-    triggers {
-        pollSCM('* * * * *')
-    }
-
-    tools {
-        nodejs "nodejs"   // Name from Global Tool Config
-    }
-
     environment {
-        CI = false
-        FRONTEND_DIR = "${WORKSPACE}\\frontend"
-        BUILD_AUTOMATION_DIR = "${WORKSPACE}\\buildAutomation"
+        // Absolute path to your company config folder
+        COMPANY_CONFIGS = "C:/ProgramData/Jenkins/.jenkins/companyConfigs"
     }
 
     stages {
-
         stage('Clean Workspace') {
             steps {
                 cleanWs()
-                bat 'echo %FRONTEND_DIR% %BUILD_AUTOMATION_DIR%'
-                bat 'dir %BUILD_AUTOMATION_DIR%'
             }
         }
 
@@ -33,9 +21,22 @@ pipeline {
             }
         }
 
+        stage('Setup Company Configs') {
+            steps {
+                // Log the folder path
+                bat 'echo Company config folder path: %COMPANY_CONFIGS%'
+
+                // List files in the config folder
+                bat 'dir "%COMPANY_CONFIGS%"'
+
+                // Optional: copy files into the workspace if needed
+                bat 'xcopy /E /I /Y "%COMPANY_CONFIGS%" "%WORKSPACE%\\company-configs"'
+            }
+        }
+
         stage('Build') {
             steps {
-                bat 'echo Building frontend...'
+                bat 'echo Building with configs from %COMPANY_CONFIGS%'
             }
         }
     }
