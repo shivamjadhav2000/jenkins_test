@@ -4,12 +4,22 @@ pipeline {
     triggers {
         pollSCM('* * * * *')
     }
+    tools {
+        nodejs "nodejs"   // The name you set in Global Tool Config
+    }
 
+    environment {
+        CI=false
+        FRONTEND_DIR = "${WORKSPACE}/frontend/"
+        BUILD_AUTOMATION_DIR = "${WORKSPACE}/buildAutomation/"
+    }
     stages {
 
         stage('Clean Workspace') {
             steps {
                 cleanWs()
+                bat 'echo $FRONTEND_DIR $BUILD_AUTOMATION_DIR'
+                bat 'ls $BUILD_AUTOMATION_DIR'
             }
         }
 
@@ -21,9 +31,10 @@ pipeline {
             }
         }
 
+
         stage('Build') {
             steps {
-                bat 'echo Running build ...'
+                
             }
         }
     }
