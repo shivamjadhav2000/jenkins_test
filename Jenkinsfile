@@ -42,30 +42,33 @@ pipeline {
         stage('Build per Company') {
             steps {
                 script {
-                    def companies = ['company1']
+                    def companies = ['company1'] // Or auto-detect later
 
                     companies.each { company ->
                         def envFile = "${COMPANY_CONFIGS_TARGET}\\${company}\\.env"
                         def staticDir = "${COMPANY_CONFIGS_TARGET}\\${company}\\static"
                         def buildOutputDir = "${FRONTEND_DIR}\\builds\\${company}"
 
-                        bat """
-                            echo Building for ${company}...
-                            if exist "${envFile}" copy "${envFile}" ".env"
-                            npm install --legacy-peer-deps
-                            set CI=false
-                            npm run build
+                        dir("${FRONTEND_DIR}") {
+                            bat """
+                                echo Building for ${company}...
 
-                            if not exist "${buildOutputDir}" mkdir "${buildOutputDir}"
-                            if exist "${buildOutputDir}" rd /s /q "${buildOutputDir}" && mkdir "${buildOutputDir}"
+                                if exist "${envFile}" copy "${envFile}" ".env"
 
-                            xcopy /E /I /Y "${FRONTEND_DIR}\\build\\*" "${buildOutputDir}\\"
+                                set CI=false
+                                npm run build
 
-                            if exist "${staticDir}" xcopy /E /I /Y "${staticDir}\\*" "${buildOutputDir}\\"
+                                if not exist "${buildOutputDir}" mkdir "${buildOutputDir}"
+                                if exist "${buildOutputDir}" rd /s /q "${buildOutputDir}" && mkdir "${buildOutputDir}"
 
-                            if exist ".env" del ".env"
-                            if exist "${FRONTEND_DIR}\\build" rd /s /q "${FRONTEND_DIR}\\build"
-                        """
+                                xcopy /E /I /Y "build\\*" "${buildOutputDir}\\"
+
+                                if exist "${staticDir}" xcopy /E /I /Y "${staticDir}\\*" "${buildOutputDir}\\"
+
+                                if exist ".env" del ".env"
+                                if exist "build" rd /s /q "build"
+                            """
+                        }
                     }
                 }
             }
