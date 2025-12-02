@@ -1,18 +1,18 @@
 pipeline {
     agent any
+
     stages {
-        stage('Clone Repository'){
+        stage('Clone Repository') {
             steps {
-                git branch:  'main',
+                git branch: 'main',
                     url: 'https://github.com/shivamjadhav2000/jenkins_test.git'
             }
         }
+
         stage('Build') {
             steps {
-                sh 'echo "Running build ..."' 
-            
+                bat 'echo Running build ...'
             }
-                
         }
     }
 }
