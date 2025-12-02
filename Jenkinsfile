@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main',
+                git branch: 'master',
                     credentialsId: 'jenkins_access',
                     url: 'git@bitbucket.org:ark-crm/crm.git'
             }
