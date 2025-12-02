@@ -1,13 +1,16 @@
 pipeline {
     agent any
+
     triggers {
-        pollSCM '* * * * *'
+        pollSCM('* * * * *')
     }
+
     stages {
         stage('Clone Repository') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/shivamjadhav2000/jenkins_test.git'
+                    credentialsId: 'jenkins_access',
+                    url: 'git@bitbucket.org:ark-crm/crm.git'
             }
         }
 
