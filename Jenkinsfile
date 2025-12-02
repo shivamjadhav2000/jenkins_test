@@ -17,7 +17,7 @@ pipeline {
             steps {
                 git branch: 'master',
                     credentialsId: 'jenkins_access',
-                    url: 'git@bitbucket.org:ark-crm/crm.git'
+                    url: 'https://bitbucket.org/ark-crm/crm.git'
             }
         }
 
