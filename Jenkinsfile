@@ -1,14 +1,14 @@
-pipline{
+pipeline {
     agent any
-    stages{
+    stages {
         stage('Clone Repository'){
-            steps{
+            steps {
                 git branch:  'main',
                     url: 'https://github.com/shivamjadhav2000/jenkins_test.git'
             }
         }
-        stage('Build'){
-            steps{
+        stage('Build') {
+            steps {
                 sh 'echo "Running build ..."' 
             
             }
