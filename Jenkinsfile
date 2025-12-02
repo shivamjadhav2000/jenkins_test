@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         // Absolute path to your company config folder
+        FRONTEND_DIR = "${WORKSPACE}/frontend"
         COMPANY_CONFIGS = "C:/ProgramData/Jenkins/.jenkins/companyConfigs"
     }
 
@@ -34,9 +35,11 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Install Dependencies') {
             steps {
-                bat 'echo Building with configs from %COMPANY_CONFIGS%'
+                dir("${FRONTEND_DIR}") {
+                    sh 'npm install --legacy-peer-deps'
+                }
             }
         }
     }
