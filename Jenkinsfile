@@ -2,9 +2,10 @@ pipeline {
     agent any
 
     environment {
-        // Absolute path to your company config folder
+        CI = false
         FRONTEND_DIR = "${WORKSPACE}/frontend"
-        COMPANY_CONFIGS = "C:/ProgramData/Jenkins/.jenkins/companyConfigs"
+        COMPANY_CONFIGS_SRC = "C:/ProgramData/Jenkins/.jenkins/companyConfigs"
+        COMPANY_CONFIGS_TARGET = "${WORKSPACE}/companyConfigs"
     }
 
     stages {
@@ -24,14 +25,9 @@ pipeline {
 
         stage('Setup Company Configs') {
             steps {
-                // Log the folder path
-                bat 'echo Company config folder path: %COMPANY_CONFIGS%'
-
-                // List files in the config folder
-                bat 'dir "%COMPANY_CONFIGS%"'
-
-                // Optional: copy files into the workspace if needed
-                bat 'xcopy /E /I /Y "%COMPANY_CONFIGS%" "%WORKSPACE%\\company-configs"'
+                bat 'echo Company config folder path: %COMPANY_CONFIGS_SRC%'
+                bat 'dir "%COMPANY_CONFIGS_SRC%"'
+                bat 'xcopy /E /I /Y "%COMPANY_CONFIGS_SRC%" "%COMPANY_CONFIGS_TARGET%"'
             }
         }
 
@@ -43,5 +39,36 @@ pipeline {
             }
         }
 
+        stage('Build per Company') {
+            steps {
+                script {
+                    def companies = ['company1']
+
+                    companies.each { company ->
+                        def envFile = "${COMPANY_CONFIGS_TARGET}\\${company}\\.env"
+                        def staticDir = "${COMPANY_CONFIGS_TARGET}\\${company}\\static"
+                        def buildOutputDir = "${FRONTEND_DIR}\\builds\\${company}"
+
+                        bat """
+                            echo Building for ${company}...
+                            if exist "${envFile}" copy "${envFile}" ".env"
+                            npm install --legacy-peer-deps
+                            set CI=false
+                            npm run build
+
+                            if not exist "${buildOutputDir}" mkdir "${buildOutputDir}"
+                            if exist "${buildOutputDir}" rd /s /q "${buildOutputDir}" && mkdir "${buildOutputDir}"
+
+                            xcopy /E /I /Y "${FRONTEND_DIR}\\build\\*" "${buildOutputDir}\\"
+
+                            if exist "${staticDir}" xcopy /E /I /Y "${staticDir}\\*" "${buildOutputDir}\\"
+
+                            if exist ".env" del ".env"
+                            if exist "${FRONTEND_DIR}\\build" rd /s /q "${FRONTEND_DIR}\\build"
+                        """
+                    }
+                }
+            }
+        }
     }
 }
