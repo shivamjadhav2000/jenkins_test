@@ -38,9 +38,10 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 dir("${FRONTEND_DIR}") {
-                    sh 'npm install --legacy-peer-deps'
+                    bat 'npm install --legacy-peer-deps'
                 }
             }
         }
+
     }
 }
