@@ -19,7 +19,7 @@ pipeline {
             steps {
                 cleanWs()
                 bat 'echo $FRONTEND_DIR $BUILD_AUTOMATION_DIR'
-                bat 'ls $BUILD_AUTOMATION_DIR'
+                bat 'dir $BUILD_AUTOMATION_DIR'
             }
         }
 
